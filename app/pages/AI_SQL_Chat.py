@@ -1,6 +1,11 @@
+import sys
+from pathlib import Path
+
 import streamlit as st
 from sqlalchemy import text
 import pandas as pd # if you plan to integrate real AI
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import llm_compute
 
 st.set_page_config(page_title="AI SQL Chatbot", page_icon="🤖", layout="wide")

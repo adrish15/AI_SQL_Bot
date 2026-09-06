@@ -5,7 +5,6 @@ from langchain.chat_models import init_chat_model
 from langchain_core.prompts import PromptTemplate
 from prompt_factory import system_prompt
 from langgraph.prebuilt import create_react_agent
-from langchain.agents.agent_toolkits import create_retriever_tool
 from langchain_community.vectorstores import InMemoryVectorStore
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 import pandas as pd
@@ -18,7 +17,7 @@ load_dotenv()
 if not os.environ.get("GOOGLE_API_KEY"):
   os.environ["GOOGLE_API_KEY"] = input("enter your Google API key: ")
 
-llm=init_chat_model(model="gemini-2.5-flash", model_provider="google_genai",temperature=0.0)
+llm=init_chat_model(model="gemini-3.8-flash", model_provider="google_genai",temperature=0.0)
 
 system_prompt=PromptTemplate.from_template(system_prompt)
 
@@ -36,4 +35,18 @@ def query_agent(query,id):
     {"messages": [{"role": "user", "content": query}]},
     config=config
     )
-    return response["messages"][-1].content
+    content = response["messages"][-1].content
+
+    if isinstance(content, str):
+        return content
+
+    if isinstance(content, list):
+        text_parts = []
+        for block in content:
+            if isinstance(block, str):
+                text_parts.append(block)
+            elif isinstance(block, dict) and isinstance(block.get("text"), str):
+                text_parts.append(block["text"])
+        return "\n".join(text_parts)
+
+    return str(content)

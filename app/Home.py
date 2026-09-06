@@ -87,7 +87,14 @@ if submitted:
             elif db_type == "PostgreSQL":
                 database_url = f"postgresql+psycopg2://{username}:{password}@{hostname}:{port}/{database_name}"
             elif db_type == "Oracle":
-                database_url = f"oracle+cx_oracle://{username}:{password}@{hostname}:{port}/{database_name}"
+                database_url = sqlalchemy.engine.URL.create(
+                    "oracle+oracledb",
+                    username=username,
+                    password=password,
+                    host=hostname,
+                    port=int(port),
+                    query={"service_name": database_name},
+                )
             # Connect
             st.session_state["engine"] = create_engine(database_url)
 
