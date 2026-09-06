@@ -4,7 +4,7 @@ import streamlit as st
 from langchain.chat_models import init_chat_model
 from langchain_core.prompts import PromptTemplate
 from prompt_factory import system_prompt
-from langgraph.prebuilt import create_react_agent
+from langchain.agents import create_agent
 from langchain_community.vectorstores import InMemoryVectorStore
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 import pandas as pd
@@ -26,7 +26,7 @@ def setup_agent(dialect,engine):
     toolkit = SQLDatabaseToolkit(db=db, llm=llm)
     tools=toolkit.get_tools()
     #tools.append(table_info_tool)
-    return create_react_agent(model=llm,
+    return create_agent(model=llm,
                     prompt=system_prompt.invoke({'dialect':dialect,'top_k':'5'}).to_string(),checkpointer=MemorySaver(),tools=tools)
 
 def query_agent(query,id):
