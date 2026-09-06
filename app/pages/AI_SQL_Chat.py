@@ -62,5 +62,6 @@ with st.container():
     if st.session_state.chat_messages:  # only show if chat exists
         if st.button("🆕 New Chat", use_container_width=True):
             st.session_state.chat_messages = []
+            st.session_state.pop("pending_query", None)
             st.session_state.thread_id += 1  # increment if already exists
             st.rerun()

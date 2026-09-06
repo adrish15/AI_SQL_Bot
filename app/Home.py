@@ -1,7 +1,7 @@
 import streamlit as st
 from sqlalchemy import create_engine, text
 import sqlalchemy
-from llm_compute import setup_agent
+from llm_compute import build_schema_profile, setup_agent
 import tempfile
 import sqlite3
 from sqlalchemy.pool import StaticPool
@@ -100,7 +100,13 @@ if submitted:
 
         with st.session_state["engine"].connect() as connection:
             cursor = connection.execute(text("SELECT 1"))
-        st.session_state["agent"] = setup_agent(dialect=db_type.lower(),engine=st.session_state["engine"])
+        schema_profile = build_schema_profile(st.session_state["engine"])
+        st.session_state["schema_profile"] = schema_profile
+        st.session_state["agent"] = setup_agent(
+            dialect=db_type.lower(),
+            engine=st.session_state["engine"],
+            schema_profile=schema_profile,
+        )
         st.success(f"✅ Successfully connected to **{db_type}** database!")
     
     except Exception as e:
